@@ -1,74 +1,86 @@
 const Engine = Matter.Engine;
 const World = Matter.World;
 const Bodies = Matter.Bodies;
-const Body = Matter.Body;
 const Constraint = Matter.Constraint;
 
-var roof;
-//Create multiple bobs, mulitple ropes varibale here
-var ball,ball1,ball2,ball3,ball4,ball5;
-var pendullum,ball1line
+var engine, world;
+var canvas;
+var palyer, playerBase;
+var computer, computerBase;
+var playerArcher;
+var arrow;
+var computerArrow,playerArrow
 
 function setup() {
-	createCanvas(800, 600);
-	rectMode(CENTER);
+  canvas = createCanvas(windowWidth, windowHeight);
 
-	engine = Engine.create();
-	world = engine.world;
+  engine = Engine.create();
+  world = engine.world;
 
-	var roof_options={
-		isStatic:true			
-	}
+  playerBase = new PlayerBase(300, random(450, height - 300), 180, 150);
+  player = new Player(285, playerBase.body.position.y - 153, 50, 180);
+ 
+  //Create Player Archer Object
+  playerArcher=new PlayerArcher(
+    width - 340,
+    playerBase.body.position.y-180,120,120
+  )
 
-	roof = Bodies.rectangle(400,100,230,20,roof_options);
-    World.add(world,roof);
-
-	var ballOption={
-		restitution:0.8
-	}
-	ball=Bodies.circle(295,260,15,ballOption)
-	World.add(world,ball)
-
-	
-	var pendullumOption={
-		pointA:{x:295,y:105},
-		bodyB:ball,
-		length:100,
-	}
-	pendullum=Constraint.create(pendullumOption)
-	World.add(world,pendullum)
-
-	ball1=Bodies.circle(320,260,15)
-	World.add(world,ball1)
-	var cons={
-		shapeA:{x:320,y:105},
-		shapeB:ball1,
-		length:100,
-
-	}
-	ball1line=Constraint.create(cons)
-	World.add(world,ball1line)
-
-	Engine.run(engine);	
+  computerBase = new ComputerBase(
+    width - 300,
+    random(450, height - 300),
+    180,
+    150
+  );
+  computer = new Computer(
+    width - 280,
+    computerBase.body.position.y - 153,
+    50,
+    180
+  );
+  computerArcher = new ComputerArcher(
+    width - 340,
+    computerBase.body.position.y - 180,
+    120,
+    120
+  );
+  
+  //Create an arrow Object
+  arrow = new PlayerArrow(playerArcher.body.position.x, playerArcher.body.position.y, 100, 10);
   
 }
 
 function draw() {
-  rectMode(CENTER);
-  background("#99004d");
+  background(180);
 
-  rect(roof.position.x,lroof.position.y,230,20);
+  Engine.update(engine);
 
-  //call display() to show ropes here
-	push()	
-  strokeWeight(5)
-  line(pendullum.pointA.x,pendullum.pointA.y,ball.position.x,ball.position.y)
-	pop()
-	line(cons.shapeA.x,cons.shapeB.y,ball1.position.x,ball1.position.y)
+  // Title
+  fill("#FFFF");
+  textAlign("center");
+  textSize(40);
+  text("EPIC ARCHERY", width / 2, 100);
 
-  //create ellipse shape for multiple bobs here
-	ellipse(ball.position.x,ball.position.y,25)
-	ellipse(ball1.position.x,ball1.position.y,25)
+ 
+  playerBase.display();
+  player.display();
+  
+
+  computerBase.display();
+  computer.display();
+  
+  playerArcher.display();
+  computerArcher.display()
+
+
+  //Display arrow();
+  computerArrow.display()
+  playerArrow.display()
+  arrow.display()
+
+  //if Space (32) key is pressed call shoot function of playerArrow
+  if(keyCode === 32){
+    //Call shoot() function and pass angle of playerArcher
+    arrow.shoot(playerArcher.body.angle)
+  }
 }
-
-//Write keyPressed function and apply force on pressing up_arrow key on the first bob.
